@@ -48,6 +48,7 @@
     .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 24px; }
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
     .section-title { font-size: 18px; font-weight: 600; color: #fff; }
+    .contact-count { font-size: 12px; color: #667eea; margin-left: 8px; }
     .reminder-list { display: flex; flex-direction: column; gap: 12px; max-height: 600px; overflow-y: auto; }
     .reminder-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 16px; transition: all 0.2s; }
     .reminder-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
@@ -88,8 +89,6 @@
     @media (max-width: 600px) {
       .type-selector { grid-template-columns: repeat(3, 1fr); }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .header-actions { width: 100%; }
-      .btn { flex: 1; justify-content: center; }
     }
   </style>
 </head>
@@ -164,20 +163,35 @@
           </div>
           <div class="stats-grid" id="stats"></div>
           <div class="section-card">
-            <div class="section-header"><h2 class="section-title">Your Reminders</h2><div id="filterInfo"></div></div>
+            <div class="section-header">
+              <h2 class="section-title">Your Reminders<span class="contact-count" id="contactCount"></span></h2>
+              <div id="filterInfo"></div>
+            </div>
             <div id="reminderList"><div class="loading"><div class="spinner"></div></div></div>
           </div>
         </div>
         <div id="modalContainer"></div>`;
       document.getElementById('addBtn').onclick = () => openModal();
-      document.getElementById('refreshBtn').onclick = loadReminders;
+      document.getElementById('refreshBtn').onclick = () => { loadReminders(); loadContacts(); };
       document.getElementById('unlinkBtn').onclick = () => { if(confirm('Unlink?')) { localStorage.removeItem('justblr_device_id'); deviceId = null; render(); }};
-      await loadReminders();
       await loadContacts();
+      await loadReminders();
     }
 
     async function loadContacts() {
-      try { const res = await fetch(`${API_URL}/sync/contacts/${deviceId}`); contacts = (await res.json()).contacts || []; } catch(e) { contacts = []; }
+      try {
+        console.log('Loading contacts for device:', deviceId);
+        const res = await fetch(`${API_URL}/sync/contacts/${deviceId}`);
+        const data = await res.json();
+        console.log('Contacts response:', data);
+        contacts = data.contacts || data || [];
+        if (Array.isArray(contacts)) {
+          document.getElementById('contactCount').textContent = `(${contacts.length} contacts synced)`;
+        }
+      } catch(e) {
+        console.error('Error loading contacts:', e);
+        contacts = [];
+      }
     }
 
     async function loadReminders() {
@@ -210,7 +224,7 @@
           <div class="reminder-header">
             <span class="type-badge ${r.reminder_type}">${r.reminder_type}</span>
             <div class="reminder-actions">
-              ${r.reminder_type==='whatsapp'&&r.contact_phone?`<button class="btn btn-success" onclick="openWA('${r.contact_phone}','${(r.notes||'').replace(/'/g,"\\'")}')">Send WA</button>`:''}
+              ${r.reminder_type==='whatsapp'&&r.contact_phone?`<button class="btn btn-success" onclick="openWhatsApp('${r.contact_phone}','${encodeURIComponent(r.notes||'')}')">Open WhatsApp</button>`:''}
               ${r.reminder_type==='call'&&r.contact_phone?`<button class="btn btn-success" onclick="window.location.href='tel:${r.contact_phone}'">Call</button>`:''}
               <button class="btn btn-secondary" onclick="openModal('${r.id}')">Edit</button>
               <button class="btn btn-danger" onclick="deleteReminder('${r.id}')">Delete</button>
@@ -223,9 +237,27 @@
         </div>`).join('')}</div>`;
     }
 
-    function openWA(phone, msg) {
-      let p = phone.replace(/[^0-9]/g,''); if(!p.startsWith('91')&&p.length===10) p='91'+p;
-      window.open(`https://wa.me/${p}?text=${encodeURIComponent(msg||'Hello!')}`,'_blank');
+    function openWhatsApp(phone, msg) {
+      // Clean phone number
+      let p = phone.replace(/[^0-9]/g,'');
+      if(!p.startsWith('91') && p.length === 10) p = '91' + p;
+      
+      // Decode message if encoded
+      let message = msg;
+      try { message = decodeURIComponent(msg); } catch(e) {}
+      
+      // Try to open WhatsApp desktop app first using whatsapp:// protocol
+      const desktopUrl = `whatsapp://send?phone=${p}&text=${encodeURIComponent(message||'Hello!')}`;
+      
+      // Set location to open desktop app
+      window.location.href = desktopUrl;
+      
+      // Fallback to web after short delay if desktop didn't open
+      setTimeout(() => {
+        // If still on same page, desktop app didn't open, try web
+        const webUrl = `https://web.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(message||'Hello!')}`;
+        window.open(webUrl, '_blank');
+      }, 1500);
     }
 
     async function deleteReminder(id) {
@@ -250,13 +282,13 @@
               </div>
               <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="rTitle" value="${r?.title||''}" required></div>
               <div class="form-group contact-picker">
-                <label class="form-label">Contact</label>
-                <input class="form-input" id="rContact" value="${r?.contact_name||''}" placeholder="Search..." autocomplete="off">
+                <label class="form-label">Contact (${contacts.length} synced)</label>
+                <input class="form-input" id="rContact" value="${r?.contact_name||''}" placeholder="Type to search contacts..." autocomplete="off">
                 <div class="contact-results hidden" id="cResults"></div>
               </div>
-              <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="rPhone" value="${r?.contact_phone||''}"></div>
+              <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="rPhone" value="${r?.contact_phone||''}" placeholder="+91 98765 43210"></div>
               <div class="form-group"><label class="form-label">Schedule</label><input type="datetime-local" class="form-input" id="rTime" value="${time}" required></div>
-              <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="rNotes">${r?.notes||''}</textarea></div>
+              <div class="form-group"><label class="form-label">Notes / Message</label><textarea class="form-textarea" id="rNotes" placeholder="Message to send...">${r?.notes||''}</textarea></div>
               <div style="display:flex;gap:12px;margin-top:24px">
                 <button type="submit" class="btn btn-primary" style="flex:1">${r?'Update':'Create'}</button>
                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -264,27 +296,86 @@
             </form>
           </div>
         </div>`;
-      const cInput = document.getElementById('rContact'), cRes = document.getElementById('cResults'), pInput = document.getElementById('rPhone');
-      cInput.oninput = () => {
-        const q = cInput.value.toLowerCase();
-        if(q.length<1){cRes.classList.add('hidden');return;}
-        const f = contacts.filter(c=>c.name.toLowerCase().includes(q)||c.phone.includes(q)).slice(0,8);
-        if(f.length){cRes.innerHTML=f.map(c=>`<div class="contact-item" onclick="pickContact('${c.name.replace(/'/g,"\\'")}','${c.phone}')"><div class="contact-name">${c.name}</div><div class="contact-phone">${c.phone}</div></div>`).join('');cRes.classList.remove('hidden');}else{cRes.classList.add('hidden');}
-      };
-      cInput.onblur = () => setTimeout(()=>cRes.classList.add('hidden'),200);
+      
+      const cInput = document.getElementById('rContact');
+      const cRes = document.getElementById('cResults');
+      const pInput = document.getElementById('rPhone');
+      
+      cInput.addEventListener('input', function() {
+        const q = this.value.toLowerCase().trim();
+        console.log('Searching contacts:', q, 'Total contacts:', contacts.length);
+        
+        if(q.length < 1) {
+          cRes.classList.add('hidden');
+          return;
+        }
+        
+        const filtered = contacts.filter(c => {
+          const name = (c.name || '').toLowerCase();
+          const phone = (c.phone || '');
+          return name.includes(q) || phone.includes(q);
+        }).slice(0, 10);
+        
+        console.log('Filtered contacts:', filtered.length);
+        
+        if(filtered.length > 0) {
+          cRes.innerHTML = filtered.map(c => 
+            `<div class="contact-item" onmousedown="pickContact('${(c.name||'').replace(/'/g,"\\'")}','${c.phone||''}')">
+              <div class="contact-name">${c.name||'Unknown'}</div>
+              <div class="contact-phone">${c.phone||'No phone'}</div>
+            </div>`
+          ).join('');
+          cRes.classList.remove('hidden');
+        } else {
+          cRes.innerHTML = '<div class="contact-item"><div class="contact-name">No contacts found</div></div>';
+          cRes.classList.remove('hidden');
+        }
+      });
+      
+      cInput.addEventListener('blur', function() {
+        setTimeout(() => cRes.classList.add('hidden'), 300);
+      });
+      
       document.getElementById('reminderForm').onsubmit = async(e) => {
         e.preventDefault();
-        const data = { title:document.getElementById('rTitle').value, reminder_type:document.getElementById('rType').value, contact_name:cInput.value, contact_phone:pInput.value, scheduled_time:document.getElementById('rTime').value, notes:document.getElementById('rNotes').value, device_id:deviceId, auto_execute:false };
+        const data = {
+          title: document.getElementById('rTitle').value,
+          reminder_type: document.getElementById('rType').value,
+          contact_name: cInput.value,
+          contact_phone: pInput.value,
+          scheduled_time: document.getElementById('rTime').value,
+          notes: document.getElementById('rNotes').value,
+          device_id: deviceId,
+          auto_execute: false
+        };
         try {
-          await fetch(r?`${API_URL}/reminders/${r.id}`:`${API_URL}/reminders`,{method:r?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-          closeModal(); loadReminders();
+          await fetch(r ? `${API_URL}/reminders/${r.id}` : `${API_URL}/reminders`, {
+            method: r ? 'PUT' : 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+          });
+          closeModal();
+          loadReminders();
         } catch(e) { alert('Failed to save'); }
       };
     }
 
-    function selType(el,t) { document.querySelectorAll('.type-option').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); document.getElementById('rType').value=t; }
-    function pickContact(n,p) { document.getElementById('rContact').value=n; document.getElementById('rPhone').value=p; document.getElementById('cResults').classList.add('hidden'); }
-    function closeModal(e) { if(e&&e.target!==e.currentTarget)return; document.getElementById('modalContainer').innerHTML=''; }
+    function selType(el, t) {
+      document.querySelectorAll('.type-option').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('rType').value = t;
+    }
+    
+    function pickContact(name, phone) {
+      document.getElementById('rContact').value = name;
+      document.getElementById('rPhone').value = phone;
+      document.getElementById('cResults').classList.add('hidden');
+    }
+    
+    function closeModal(e) {
+      if(e && e.target !== e.currentTarget) return;
+      document.getElementById('modalContainer').innerHTML = '';
+    }
 
     render();
   </script>
