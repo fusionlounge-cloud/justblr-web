@@ -39,12 +39,12 @@
     .btn-danger { background: rgba(239,68,68,0.1); color: #ef4444; padding: 8px 12px; }
     .btn-danger:hover { background: rgba(239,68,68,0.2); }
     .btn-success { background: rgba(34,197,94,0.15); color: #22c55e; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 32px; }
-    .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 32px; }
+    .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
     .stat-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); }
     .stat-card.active { border-color: #667eea; background: rgba(102,126,234,0.1); }
-    .stat-card h3 { font-size: 28px; color: #fff; font-weight: 700; }
-    .stat-card p { font-size: 13px; color: #71717a; margin-top: 4px; }
+    .stat-card h3 { font-size: 24px; color: #fff; font-weight: 700; }
+    .stat-card p { font-size: 11px; color: #71717a; margin-top: 4px; }
     .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 24px; }
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
     .section-title { font-size: 18px; font-weight: 600; color: #fff; }
@@ -60,6 +60,7 @@
     .type-badge.whatsapp { background: rgba(37,211,102,0.15); color: #25d366; }
     .type-badge.meet { background: rgba(168,85,247,0.15); color: #a855f7; }
     .type-badge.deskwork { background: rgba(249,115,22,0.15); color: #f97316; }
+    .type-badge.keepnotes { background: rgba(234,179,8,0.15); color: #eab308; }
     .reminder-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
     .reminder-meta { font-size: 12px; color: #71717a; margin-bottom: 4px; }
     .reminder-notes { font-size: 13px; color: #a1a1aa; margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px; }
@@ -74,21 +75,23 @@
     .form-input, .form-select, .form-textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 14px; font-size: 14px; color: #fff; outline: none; }
     .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #667eea; }
     .form-textarea { resize: vertical; min-height: 80px; }
-    .type-selector { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .type-option { padding: 12px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: transparent; cursor: pointer; text-align: center; transition: all 0.2s; color: #fff; }
     .type-option:hover { background: rgba(255,255,255,0.05); }
     .type-option.selected { border-color: #667eea; background: rgba(102,126,234,0.1); }
-    .type-option span { display: block; font-size: 11px; color: #a1a1aa; margin-top: 4px; }
+    .type-option .icon { font-size: 20px; margin-bottom: 4px; }
+    .type-option span { display: block; font-size: 11px; color: #a1a1aa; }
     .contact-picker { position: relative; }
     .contact-results { position: absolute; top: 100%; left: 0; right: 0; background: #1a1a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; margin-top: 4px; max-height: 200px; overflow-y: auto; z-index: 10; }
     .contact-item { padding: 12px 14px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .contact-item:hover { background: rgba(255,255,255,0.05); }
     .contact-name { font-size: 14px; color: #fff; }
     .contact-phone { font-size: 12px; color: #71717a; }
+    .time-hint { font-size: 11px; color: #667eea; margin-top: 4px; }
     .hidden { display: none !important; }
     @media (max-width: 600px) {
-      .type-selector { grid-template-columns: repeat(3, 1fr); }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .type-selector { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -100,6 +103,14 @@
     let reminders = [];
     let contacts = [];
     let filterType = null;
+
+    // Get tomorrow at 4:30 PM
+    function getDefaultTime() {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(16, 30, 0, 0); // 4:30 PM
+      return tomorrow.toISOString().slice(0, 16);
+    }
 
     function render() {
       deviceId ? showDashboard() : showLinkScreen();
@@ -183,7 +194,6 @@
         console.log('Loading contacts for device:', deviceId);
         const res = await fetch(`${API_URL}/sync/contacts/${deviceId}`);
         const data = await res.json();
-        console.log('Contacts response:', data);
         contacts = data.contacts || data || [];
         if (Array.isArray(contacts)) {
           document.getElementById('contactCount').textContent = `(${contacts.length} contacts synced)`;
@@ -203,14 +213,18 @@
     }
 
     function renderStats() {
-      const stats = { total: reminders.length, call: reminders.filter(r=>r.reminder_type==='call').length, sms: reminders.filter(r=>r.reminder_type==='sms').length, whatsapp: reminders.filter(r=>r.reminder_type==='whatsapp').length, meet: reminders.filter(r=>r.reminder_type==='meet').length, deskwork: reminders.filter(r=>r.reminder_type==='deskwork').length };
+      const types = ['call', 'sms', 'whatsapp', 'meet', 'deskwork', 'keepnotes'];
+      const stats = { total: reminders.length };
+      types.forEach(t => stats[t] = reminders.filter(r => r.reminder_type === t).length);
+      
       document.getElementById('stats').innerHTML = `
         <div class="stat-card ${filterType===null?'active':''}" onclick="setFilter(null)"><h3>${stats.total}</h3><p>Total</p></div>
-        <div class="stat-card ${filterType==='call'?'active':''}" onclick="setFilter('call')"><h3>${stats.call}</h3><p>Calls</p></div>
-        <div class="stat-card ${filterType==='sms'?'active':''}" onclick="setFilter('sms')"><h3>${stats.sms}</h3><p>SMS</p></div>
-        <div class="stat-card ${filterType==='whatsapp'?'active':''}" onclick="setFilter('whatsapp')"><h3>${stats.whatsapp}</h3><p>WhatsApp</p></div>
-        <div class="stat-card ${filterType==='meet'?'active':''}" onclick="setFilter('meet')"><h3>${stats.meet}</h3><p>Meetings</p></div>
-        <div class="stat-card ${filterType==='deskwork'?'active':''}" onclick="setFilter('deskwork')"><h3>${stats.deskwork}</h3><p>Deskwork</p></div>`;
+        <div class="stat-card ${filterType==='call'?'active':''}" onclick="setFilter('call')"><h3>${stats.call}</h3><p>📞 Calls</p></div>
+        <div class="stat-card ${filterType==='sms'?'active':''}" onclick="setFilter('sms')"><h3>${stats.sms}</h3><p>💬 SMS</p></div>
+        <div class="stat-card ${filterType==='whatsapp'?'active':''}" onclick="setFilter('whatsapp')"><h3>${stats.whatsapp}</h3><p>📱 WhatsApp</p></div>
+        <div class="stat-card ${filterType==='meet'?'active':''}" onclick="setFilter('meet')"><h3>${stats.meet}</h3><p>👥 Meet</p></div>
+        <div class="stat-card ${filterType==='deskwork'?'active':''}" onclick="setFilter('deskwork')"><h3>${stats.deskwork}</h3><p>💻 Deskwork</p></div>
+        <div class="stat-card ${filterType==='keepnotes'?'active':''}" onclick="setFilter('keepnotes')"><h3>${stats.keepnotes}</h3><p>📝 Notes</p></div>`;
     }
 
     function setFilter(type) { filterType = type; renderStats(); renderReminders(); }
@@ -238,25 +252,13 @@
     }
 
     function openWhatsApp(phone, msg) {
-      // Clean phone number
       let p = phone.replace(/[^0-9]/g,'');
       if(!p.startsWith('91') && p.length === 10) p = '91' + p;
-      
-      // Decode message if encoded
       let message = msg;
       try { message = decodeURIComponent(msg); } catch(e) {}
-      
-      // Try to open WhatsApp desktop app first using whatsapp:// protocol
-      const desktopUrl = `whatsapp://send?phone=${p}&text=${encodeURIComponent(message||'Hello!')}`;
-      
-      // Set location to open desktop app
-      window.location.href = desktopUrl;
-      
-      // Fallback to web after short delay if desktop didn't open
+      window.location.href = `whatsapp://send?phone=${p}&text=${encodeURIComponent(message||'Hello!')}`;
       setTimeout(() => {
-        // If still on same page, desktop app didn't open, try web
-        const webUrl = `https://web.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(message||'Hello!')}`;
-        window.open(webUrl, '_blank');
+        window.open(`https://web.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(message||'Hello!')}`, '_blank');
       }, 1500);
     }
 
@@ -267,7 +269,17 @@
 
     function openModal(editId) {
       const r = editId ? reminders.find(x=>x.id===editId) : null;
-      const time = r?.scheduled_time ? new Date(r.scheduled_time).toISOString().slice(0,16) : '';
+      const time = r?.scheduled_time ? new Date(r.scheduled_time).toISOString().slice(0,16) : getDefaultTime();
+      
+      const typeOptions = [
+        { type: 'call', icon: '📞', label: 'Call' },
+        { type: 'sms', icon: '💬', label: 'SMS' },
+        { type: 'whatsapp', icon: '📱', label: 'WhatsApp' },
+        { type: 'meet', icon: '👥', label: 'Meeting' },
+        { type: 'deskwork', icon: '💻', label: 'Deskwork' },
+        { type: 'keepnotes', icon: '📝', label: 'Notes' }
+      ];
+      
       document.getElementById('modalContainer').innerHTML = `
         <div class="modal-overlay" onclick="closeModal(event)">
           <div class="modal-content" onclick="event.stopPropagation()">
@@ -276,19 +288,23 @@
               <div class="form-group">
                 <label class="form-label">Type</label>
                 <div class="type-selector">
-                  ${['call','sms','whatsapp','meet','deskwork'].map(t=>`<div class="type-option ${(r?.reminder_type||'call')===t?'selected':''}" onclick="selType(this,'${t}')"><span style="font-size:18px">${t==='call'?'📞':t==='sms'?'💬':t==='whatsapp'?'📱':t==='meet'?'👥':'💻'}</span><span>${t}</span></div>`).join('')}
+                  ${typeOptions.map(t=>`<div class="type-option ${(r?.reminder_type||'call')===t.type?'selected':''}" onclick="selType(this,'${t.type}')"><div class="icon">${t.icon}</div><span>${t.label}</span></div>`).join('')}
                 </div>
                 <input type="hidden" id="rType" value="${r?.reminder_type||'call'}">
               </div>
-              <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="rTitle" value="${r?.title||''}" required></div>
+              <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="rTitle" value="${r?.title||''}" placeholder="e.g. Call John about project" required></div>
               <div class="form-group contact-picker">
                 <label class="form-label">Contact (${contacts.length} synced)</label>
                 <input class="form-input" id="rContact" value="${r?.contact_name||''}" placeholder="Type to search contacts..." autocomplete="off">
                 <div class="contact-results hidden" id="cResults"></div>
               </div>
               <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="rPhone" value="${r?.contact_phone||''}" placeholder="+91 98765 43210"></div>
-              <div class="form-group"><label class="form-label">Schedule</label><input type="datetime-local" class="form-input" id="rTime" value="${time}" required></div>
-              <div class="form-group"><label class="form-label">Notes / Message</label><textarea class="form-textarea" id="rNotes" placeholder="Message to send...">${r?.notes||''}</textarea></div>
+              <div class="form-group">
+                <label class="form-label">Schedule</label>
+                <input type="datetime-local" class="form-input" id="rTime" value="${time}" required>
+                <div class="time-hint">Default: Tomorrow 4:30 PM</div>
+              </div>
+              <div class="form-group"><label class="form-label">Notes / Message</label><textarea class="form-textarea" id="rNotes" placeholder="Message to send or notes...">${r?.notes||''}</textarea></div>
               <div style="display:flex;gap:12px;margin-top:24px">
                 <button type="submit" class="btn btn-primary" style="flex:1">${r?'Update':'Create'}</button>
                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -303,21 +319,12 @@
       
       cInput.addEventListener('input', function() {
         const q = this.value.toLowerCase().trim();
-        console.log('Searching contacts:', q, 'Total contacts:', contacts.length);
-        
-        if(q.length < 1) {
-          cRes.classList.add('hidden');
-          return;
-        }
-        
+        if(q.length < 1) { cRes.classList.add('hidden'); return; }
         const filtered = contacts.filter(c => {
           const name = (c.name || '').toLowerCase();
           const phone = (c.phone || '');
           return name.includes(q) || phone.includes(q);
         }).slice(0, 10);
-        
-        console.log('Filtered contacts:', filtered.length);
-        
         if(filtered.length > 0) {
           cRes.innerHTML = filtered.map(c => 
             `<div class="contact-item" onmousedown="pickContact('${(c.name||'').replace(/'/g,"\\'")}','${c.phone||''}')">
@@ -331,10 +338,7 @@
           cRes.classList.remove('hidden');
         }
       });
-      
-      cInput.addEventListener('blur', function() {
-        setTimeout(() => cRes.classList.add('hidden'), 300);
-      });
+      cInput.addEventListener('blur', function() { setTimeout(() => cRes.classList.add('hidden'), 300); });
       
       document.getElementById('reminderForm').onsubmit = async(e) => {
         e.preventDefault();
