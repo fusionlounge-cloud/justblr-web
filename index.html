@@ -27,7 +27,7 @@
     .link-instructions ol { font-size: 13px; color: #71717a; padding-left: 20px; }
     .link-instructions li { margin-bottom: 8px; }
     .dashboard { padding: 24px; max-width: 1200px; margin: 0 auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
     .header h1 { font-size: 28px; font-weight: 700; color: #fff; }
     .header p { font-size: 14px; color: #71717a; }
     .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -39,21 +39,25 @@
     .btn-danger { background: rgba(239,68,68,0.1); color: #ef4444; padding: 8px 12px; }
     .btn-danger:hover { background: rgba(239,68,68,0.2); }
     .btn-success { background: rgba(34,197,94,0.15); color: #22c55e; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 32px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; }
+    .tab { padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: #a1a1aa; background: transparent; border: none; }
+    .tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    .tab.active { color: #fff; background: rgba(102,126,234,0.2); border: 1px solid #667eea; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 24px; }
     .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
     .stat-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); }
     .stat-card.active { border-color: #667eea; background: rgba(102,126,234,0.1); }
     .stat-card h3 { font-size: 24px; color: #fff; font-weight: 700; }
     .stat-card p { font-size: 11px; color: #71717a; margin-top: 4px; }
-    .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 24px; }
+    .section-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 24px; margin-bottom: 24px; }
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
     .section-title { font-size: 18px; font-weight: 600; color: #fff; }
     .contact-count { font-size: 12px; color: #667eea; margin-left: 8px; }
-    .reminder-list { display: flex; flex-direction: column; gap: 12px; max-height: 600px; overflow-y: auto; }
-    .reminder-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 16px; transition: all 0.2s; }
-    .reminder-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
-    .reminder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-    .reminder-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .reminder-list, .task-list, .employee-list { display: flex; flex-direction: column; gap: 12px; max-height: 500px; overflow-y: auto; }
+    .reminder-card, .task-card, .employee-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 16px; transition: all 0.2s; }
+    .reminder-card:hover, .task-card:hover, .employee-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+    .reminder-header, .task-header, .employee-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+    .reminder-actions, .task-actions, .employee-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .type-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
     .type-badge.call { background: rgba(34,197,94,0.15); color: #22c55e; }
     .type-badge.sms { background: rgba(59,130,246,0.15); color: #3b82f6; }
@@ -61,9 +65,11 @@
     .type-badge.meet { background: rgba(168,85,247,0.15); color: #a855f7; }
     .type-badge.deskwork { background: rgba(249,115,22,0.15); color: #f97316; }
     .type-badge.keepnotes { background: rgba(234,179,8,0.15); color: #eab308; }
-    .reminder-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
-    .reminder-meta { font-size: 12px; color: #71717a; margin-bottom: 4px; }
-    .reminder-notes { font-size: 13px; color: #a1a1aa; margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px; }
+    .type-badge.pending { background: rgba(234,179,8,0.15); color: #eab308; }
+    .type-badge.completed { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .reminder-title, .task-title, .employee-name { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .reminder-meta, .task-meta, .employee-meta { font-size: 12px; color: #71717a; margin-bottom: 4px; }
+    .reminder-notes, .task-notes { font-size: 13px; color: #a1a1aa; margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px; }
     .empty-state { text-align: center; padding: 48px; color: #71717a; }
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
     .modal-content { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 32px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; }
@@ -97,9 +103,8 @@
   <script>
     const API_URL = 'https://justblr-backend.onrender.com/api';
     let deviceId = localStorage.getItem('justblr_device_id');
-    let reminders = [];
-    let contacts = [];
-    let filterType = null;
+    let reminders = [], contacts = [], employees = [], tasks = [];
+    let filterType = null, currentTab = 'reminders';
 
     function getDefaultTime() {
       const tomorrow = new Date();
@@ -139,59 +144,134 @@
       document.getElementById('app').innerHTML = `
         <div class="dashboard">
           <div class="header"><div><h1>Justblr Matrix</h1><p>Web Dashboard</p></div>
-            <div class="header-actions"><button class="btn btn-primary" id="addBtn">+ New Reminder</button><button class="btn btn-secondary" id="refreshBtn">Refresh</button><button class="btn btn-secondary" id="unlinkBtn">Unlink</button></div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" id="refreshBtn">Refresh</button>
+              <button class="btn btn-secondary" id="unlinkBtn">Unlink</button>
+            </div>
           </div>
-          <div class="stats-grid" id="stats"></div>
-          <div class="section-card"><div class="section-header"><h2 class="section-title">Your Reminders<span class="contact-count" id="contactCount"></span></h2><div id="filterInfo"></div></div><div id="reminderList"><div class="loading"><div class="spinner"></div></div></div></div>
+          <div class="tabs">
+            <button class="tab active" data-tab="reminders">Reminders</button>
+            <button class="tab" data-tab="delegation">Delegation</button>
+          </div>
+          <div id="tabContent"></div>
         </div><div id="modalContainer"></div>`;
-      document.getElementById('addBtn').onclick=()=>openModal();
-      document.getElementById('refreshBtn').onclick=()=>{loadReminders();loadContacts();};
+      document.getElementById('refreshBtn').onclick=()=>{loadAll();};
       document.getElementById('unlinkBtn').onclick=()=>{if(confirm('Unlink?')){localStorage.removeItem('justblr_device_id');deviceId=null;render();}};
-      await loadContacts();await loadReminders();
+      document.querySelectorAll('.tab').forEach(tab=>{
+        tab.onclick=()=>{
+          document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+          tab.classList.add('active');
+          currentTab=tab.dataset.tab;
+          renderTabContent();
+        };
+      });
+      await loadAll();
     }
 
-    async function loadContacts(){try{const res=await fetch(`${API_URL}/sync/contacts/${deviceId}`);const data=await res.json();contacts=data.contacts||data||[];if(Array.isArray(contacts))document.getElementById('contactCount').textContent=`(${contacts.length} contacts)`;}catch(e){contacts=[];}}
-
-    async function loadReminders(){try{const res=await fetch(`${API_URL}/reminders?device_id=${deviceId}`);reminders=await res.json();renderStats();renderReminders();}catch(e){document.getElementById('reminderList').innerHTML='<div class="empty-state">Error loading</div>';}}
-
-    function renderStats(){
-      const types=['call','sms','whatsapp','meet','deskwork','keepnotes'],stats={total:reminders.length};types.forEach(t=>stats[t]=reminders.filter(r=>r.reminder_type===t).length);
-      document.getElementById('stats').innerHTML=`
-        <div class="stat-card ${filterType===null?'active':''}" onclick="setFilter(null)"><h3>${stats.total}</h3><p>Total</p></div>
-        <div class="stat-card ${filterType==='call'?'active':''}" onclick="setFilter('call')"><h3>${stats.call}</h3><p>📞 Calls</p></div>
-        <div class="stat-card ${filterType==='sms'?'active':''}" onclick="setFilter('sms')"><h3>${stats.sms}</h3><p>💬 SMS</p></div>
-        <div class="stat-card ${filterType==='whatsapp'?'active':''}" onclick="setFilter('whatsapp')"><h3>${stats.whatsapp}</h3><p>📱 WhatsApp</p></div>
-        <div class="stat-card ${filterType==='meet'?'active':''}" onclick="setFilter('meet')"><h3>${stats.meet}</h3><p>👥 Meet</p></div>
-        <div class="stat-card ${filterType==='deskwork'?'active':''}" onclick="setFilter('deskwork')"><h3>${stats.deskwork}</h3><p>💻 Deskwork</p></div>
-        <div class="stat-card ${filterType==='keepnotes'?'active':''}" onclick="setFilter('keepnotes')"><h3>${stats.keepnotes}</h3><p>📝 Notes</p></div>`;
+    async function loadAll() {
+      await Promise.all([loadContacts(), loadReminders(), loadEmployees(), loadTasks()]);
+      renderTabContent();
     }
 
-    function setFilter(type){filterType=type;renderStats();renderReminders();}
+    function renderTabContent() {
+      if(currentTab==='reminders') renderRemindersTab();
+      else renderDelegationTab();
+    }
 
-    function renderReminders(){
+    async function loadContacts(){try{const res=await fetch(`${API_URL}/sync/contacts/${deviceId}`);const data=await res.json();contacts=data.contacts||data||[];}catch(e){contacts=[];}}
+    async function loadReminders(){try{const res=await fetch(`${API_URL}/reminders?device_id=${deviceId}`);reminders=await res.json();}catch(e){reminders=[];}}
+    async function loadEmployees(){try{const res=await fetch(`${API_URL}/employees?device_id=${deviceId}`);employees=await res.json();}catch(e){employees=[];}}
+    async function loadTasks(){try{const res=await fetch(`${API_URL}/tasks?device_id=${deviceId}`);tasks=await res.json();}catch(e){tasks=[];}}
+
+    function renderRemindersTab() {
+      const types=['call','sms','whatsapp','meet','deskwork','keepnotes'],stats={total:reminders.length};
+      types.forEach(t=>stats[t]=reminders.filter(r=>r.reminder_type===t).length);
       const filtered=filterType?reminders.filter(r=>r.reminder_type===filterType):reminders;
-      document.getElementById('filterInfo').innerHTML=filterType?`<button class="btn btn-secondary" onclick="setFilter(null)">Clear: ${filterType.toUpperCase()}</button>`:'';
-      if(!filtered.length){document.getElementById('reminderList').innerHTML='<div class="empty-state"><h3>No reminders</h3><p>Create one above</p></div>';return;}
-      document.getElementById('reminderList').innerHTML=`<div class="reminder-list">${filtered.map(r=>`
-        <div class="reminder-card"><div class="reminder-header"><span class="type-badge ${r.reminder_type}">${r.reminder_type}</span>
-          <div class="reminder-actions">
-            ${r.reminder_type==='whatsapp'&&r.contact_phone?`<button class="btn btn-success" onclick="openWhatsApp('${r.contact_phone}','${encodeURIComponent(r.notes||'')}')">Open WA</button>`:''}
-            ${r.reminder_type==='call'&&r.contact_phone?`<button class="btn btn-success" onclick="window.location.href='tel:${r.contact_phone}'">Call</button>`:''}
-            <button class="btn btn-secondary" onclick="openModal('${r.id}')">Edit</button>
-            <button class="btn btn-danger" onclick="deleteReminder('${r.id}')">Delete</button>
-          </div></div>
-          <div class="reminder-title">${r.title||'Untitled'}</div>
-          ${r.contact_name?`<div class="reminder-meta">Contact: ${r.contact_name}${r.contact_phone?' • '+r.contact_phone:''}</div>`:''}
-          <div class="reminder-meta">Scheduled: ${new Date(r.scheduled_time).toLocaleString()}</div>
-          ${r.notes?`<div class="reminder-notes">${r.notes}</div>`:''}
-        </div>`).join('')}</div>`;
+      document.getElementById('tabContent').innerHTML=`
+        <div class="section-card">
+          <div class="section-header"><button class="btn btn-primary" onclick="openReminderModal()">+ New Reminder</button></div>
+          <div class="stats-grid">
+            <div class="stat-card ${filterType===null?'active':''}" onclick="setFilter(null)"><h3>${stats.total}</h3><p>Total</p></div>
+            ${types.map(t=>`<div class="stat-card ${filterType===t?'active':''}" onclick="setFilter('${t}')"><h3>${stats[t]}</h3><p>${t}</p></div>`).join('')}
+          </div>
+          ${filterType?`<button class="btn btn-secondary" onclick="setFilter(null)" style="margin-bottom:16px">Clear: ${filterType.toUpperCase()}</button>`:''}
+          <div class="reminder-list">
+            ${filtered.length?filtered.map(r=>`
+              <div class="reminder-card"><div class="reminder-header"><span class="type-badge ${r.reminder_type}">${r.reminder_type}</span>
+                <div class="reminder-actions">
+                  ${r.reminder_type==='whatsapp'&&r.contact_phone?`<button class="btn btn-success" onclick="openWhatsApp('${r.contact_phone}','${encodeURIComponent(r.notes||'')}')">WA</button>`:''}
+                  <button class="btn btn-secondary" onclick="openReminderModal('${r.id}')">Edit</button>
+                  <button class="btn btn-danger" onclick="deleteReminder('${r.id}')">Del</button>
+                </div></div>
+                <div class="reminder-title">${r.title||'Untitled'}</div>
+                ${r.contact_name?`<div class="reminder-meta">Contact: ${r.contact_name}${r.contact_phone?' • '+r.contact_phone:''}</div>`:''}
+                <div class="reminder-meta">Scheduled: ${new Date(r.scheduled_time).toLocaleString()}</div>
+                ${r.notes?`<div class="reminder-notes">${r.notes}</div>`:''}
+              </div>`).join(''):'<div class="empty-state">No reminders</div>'}
+          </div>
+        </div>`;
     }
 
-    function openWhatsApp(phone,msg){let p=phone.replace(/[^0-9]/g,'');if(!p.startsWith('91')&&p.length===10)p='91'+p;let m=msg;try{m=decodeURIComponent(msg);}catch(e){}window.location.href=`whatsapp://send?phone=${p}&text=${encodeURIComponent(m||'Hello!')}`;setTimeout(()=>{window.open(`https://web.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(m||'Hello!')}`,'_blank');},1500);}
+    function renderDelegationTab() {
+      const activeEmployees=employees.filter(e=>e.is_active!==false);
+      const pendingTasks=tasks.filter(t=>!t.is_completed);
+      const completedTasks=tasks.filter(t=>t.is_completed);
+      document.getElementById('tabContent').innerHTML=`
+        <div class="section-card">
+          <div class="section-header"><h2 class="section-title">Employees (${activeEmployees.length})</h2><button class="btn btn-primary" onclick="openEmployeeModal()">+ Add Employee</button></div>
+          <div class="employee-list">
+            ${activeEmployees.length?activeEmployees.map(e=>`
+              <div class="employee-card"><div class="employee-header">
+                <div class="employee-name">${e.name}</div>
+                <div class="employee-actions">
+                  <button class="btn btn-secondary" onclick="openEmployeeModal('${e.id}')">Edit</button>
+                  <button class="btn btn-danger" onclick="deleteEmployee('${e.id}')">Del</button>
+                </div></div>
+                <div class="employee-meta">${e.phone||'No phone'}</div>
+              </div>`).join(''):'<div class="empty-state">No employees</div>'}
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="section-header"><h2 class="section-title">Tasks (${pendingTasks.length} pending)</h2><button class="btn btn-primary" onclick="openTaskModal()">+ Assign Task</button></div>
+          <div class="task-list">
+            ${pendingTasks.length?pendingTasks.map(t=>`
+              <div class="task-card"><div class="task-header">
+                <span class="type-badge pending">Pending</span>
+                <div class="task-actions">
+                  <button class="btn btn-success" onclick="completeTask('${t.id}')">Complete</button>
+                  <button class="btn btn-secondary" onclick="openTaskModal('${t.id}')">Edit</button>
+                  <button class="btn btn-danger" onclick="deleteTask('${t.id}')">Del</button>
+                </div></div>
+                <div class="task-title">${t.description||'No description'}</div>
+                <div class="task-meta">Assigned to: ${t.employee_name||'Unknown'}</div>
+                ${t.deadline?`<div class="task-meta">Deadline: ${new Date(t.deadline).toLocaleString()}</div>`:''}
+              </div>`).join(''):'<div class="empty-state">No pending tasks</div>'}
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="section-header"><h2 class="section-title">Completed (${completedTasks.length})</h2></div>
+          <div class="task-list">
+            ${completedTasks.slice(0,10).map(t=>`
+              <div class="task-card"><div class="task-header">
+                <span class="type-badge completed">Done</span>
+                <div class="task-actions">
+                  <button class="btn btn-danger" onclick="deleteTask('${t.id}')">Del</button>
+                </div></div>
+                <div class="task-title">${t.description||'No description'}</div>
+                <div class="task-meta">Completed by: ${t.employee_name||'Unknown'}</div>
+              </div>`).join('')||'<div class="empty-state">No completed tasks</div>'}
+          </div>
+        </div>`;
+    }
 
-    async function deleteReminder(id){if(!confirm('Delete?'))return;try{await fetch(`${API_URL}/reminders/${id}`,{method:'DELETE'});loadReminders();}catch(e){alert('Failed');}}
+    function setFilter(type){filterType=type;renderRemindersTab();}
+    function openWhatsApp(phone,msg){let p=phone.replace(/[^0-9]/g,'');if(!p.startsWith('91')&&p.length===10)p='91'+p;let m=msg;try{m=decodeURIComponent(msg);}catch(e){}window.location.href=`whatsapp://send?phone=${p}&text=${encodeURIComponent(m||'Hello!')}`;}
+    async function deleteReminder(id){if(!confirm('Delete?'))return;try{await fetch(`${API_URL}/reminders/${id}`,{method:'DELETE'});await loadReminders();renderRemindersTab();}catch(e){alert('Failed');}}
+    async function deleteEmployee(id){if(!confirm('Delete employee?'))return;try{await fetch(`${API_URL}/employees/${id}`,{method:'DELETE'});await loadEmployees();renderDelegationTab();}catch(e){alert('Failed');}}
+    async function deleteTask(id){if(!confirm('Delete task?'))return;try{await fetch(`${API_URL}/tasks/${id}`,{method:'DELETE'});await loadTasks();renderDelegationTab();}catch(e){alert('Failed');}}
+    async function completeTask(id){try{await fetch(`${API_URL}/tasks/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({is_completed:true})});await loadTasks();renderDelegationTab();}catch(e){alert('Failed');}}
 
-    function openModal(editId){
+    function openReminderModal(editId){
       const r=editId?reminders.find(x=>x.id===editId):null;
       const time=r?.scheduled_time?new Date(r.scheduled_time).toISOString().slice(0,16):getDefaultTime();
       const opts=[{type:'call',icon:'📞',label:'Call'},{type:'sms',icon:'💬',label:'SMS'},{type:'whatsapp',icon:'📱',label:'WhatsApp'},{type:'meet',icon:'👥',label:'Meeting'},{type:'deskwork',icon:'💻',label:'Deskwork'},{type:'keepnotes',icon:'📝',label:'Notes'}];
@@ -203,18 +283,58 @@
               <div class="type-selector">${opts.map(t=>`<div class="type-option ${(r?.reminder_type||'call')===t.type?'selected':''}" onclick="selType(this,'${t.type}')"><div class="icon">${t.icon}</div><span>${t.label}</span></div>`).join('')}</div>
               <input type="hidden" id="rType" value="${r?.reminder_type||'call'}">
             </div>
-            <div class="form-group"><label class="form-label">Title (optional)</label><input class="form-input" id="rTitle" value="${r?.title||''}" placeholder="e.g. Call John about project"></div>
-            <div class="form-group contact-picker"><label class="form-label">Contact (${contacts.length} synced)</label><input class="form-input" id="rContact" value="${r?.contact_name||''}" placeholder="Type to search..." autocomplete="off"><div class="contact-results hidden" id="cResults"></div></div>
-            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="rPhone" value="${r?.contact_phone||''}" placeholder="+91 98765 43210"></div>
+            <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="rTitle" value="${r?.title||''}" placeholder="e.g. Call John"></div>
+            <div class="form-group contact-picker"><label class="form-label">Contact</label><input class="form-input" id="rContact" value="${r?.contact_name||''}" placeholder="Search..." autocomplete="off"><div class="contact-results hidden" id="cResults"></div></div>
+            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="rPhone" value="${r?.contact_phone||''}"></div>
             <div class="form-group"><label class="form-label">Schedule</label><input type="datetime-local" class="form-input" id="rTime" value="${time}" required><div class="time-hint">Default: Tomorrow 4:30 PM</div></div>
-            <div class="form-group"><label class="form-label">Notes / Message</label><textarea class="form-textarea" id="rNotes" placeholder="Message or notes...">${r?.notes||''}</textarea></div>
+            <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="rNotes">${r?.notes||''}</textarea></div>
             <div style="display:flex;gap:12px;margin-top:24px"><button type="submit" class="btn btn-primary" style="flex:1">${r?'Update':'Create'}</button><button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>
           </form>
         </div></div>`;
+      setupContactSearch();
+      document.getElementById('reminderForm').onsubmit=async(e)=>{e.preventDefault();const data={title:document.getElementById('rTitle').value,reminder_type:document.getElementById('rType').value,contact_name:document.getElementById('rContact').value,contact_phone:document.getElementById('rPhone').value,scheduled_time:document.getElementById('rTime').value,notes:document.getElementById('rNotes').value,device_id:deviceId,auto_execute:false};try{await fetch(r?`${API_URL}/reminders/${r.id}`:`${API_URL}/reminders`,{method:r?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});closeModal();await loadReminders();renderRemindersTab();}catch(e){alert('Failed');}};
+    }
+
+    function openEmployeeModal(editId){
+      const e=editId?employees.find(x=>x.id===editId):null;
+      document.getElementById('modalContainer').innerHTML=`
+        <div class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()">
+          <div class="modal-header"><h2 class="modal-title">${e?'Edit':'Add'} Employee</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+          <form id="employeeForm">
+            <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="eName" value="${e?.name||''}" required></div>
+            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="ePhone" value="${e?.phone||''}"></div>
+            <div style="display:flex;gap:12px;margin-top:24px"><button type="submit" class="btn btn-primary" style="flex:1">${e?'Update':'Add'}</button><button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>
+          </form>
+        </div></div>`;
+      document.getElementById('employeeForm').onsubmit=async(ev)=>{ev.preventDefault();const data={name:document.getElementById('eName').value,phone:document.getElementById('ePhone').value,device_id:deviceId,is_active:true};try{await fetch(e?`${API_URL}/employees/${e.id}`:`${API_URL}/employees`,{method:e?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});closeModal();await loadEmployees();renderDelegationTab();}catch(e){alert('Failed');}};
+    }
+
+    function openTaskModal(editId){
+      const t=editId?tasks.find(x=>x.id===editId):null;
+      const activeEmps=employees.filter(e=>e.is_active!==false);
+      const deadline=t?.deadline?new Date(t.deadline).toISOString().slice(0,16):getDefaultTime();
+      document.getElementById('modalContainer').innerHTML=`
+        <div class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()">
+          <div class="modal-header"><h2 class="modal-title">${t?'Edit':'Assign'} Task</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+          <form id="taskForm">
+            <div class="form-group"><label class="form-label">Assign To</label>
+              <select class="form-select" id="tEmployee" required>
+                <option value="">Select employee</option>
+                ${activeEmps.map(e=>`<option value="${e.id}" ${t?.employee_id===e.id?'selected':''}>${e.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Task Description</label><textarea class="form-textarea" id="tDesc" required>${t?.description||''}</textarea></div>
+            <div class="form-group"><label class="form-label">Deadline</label><input type="datetime-local" class="form-input" id="tDeadline" value="${deadline}"></div>
+            <div style="display:flex;gap:12px;margin-top:24px"><button type="submit" class="btn btn-primary" style="flex:1">${t?'Update':'Assign'}</button><button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>
+          </form>
+        </div></div>`;
+      document.getElementById('taskForm').onsubmit=async(ev)=>{ev.preventDefault();const empId=document.getElementById('tEmployee').value;const emp=employees.find(e=>e.id===empId);const data={employee_id:empId,employee_name:emp?.name||'',description:document.getElementById('tDesc').value,deadline:document.getElementById('tDeadline').value||null,device_id:deviceId,is_completed:t?.is_completed||false};try{await fetch(t?`${API_URL}/tasks/${t.id}`:`${API_URL}/tasks`,{method:t?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});closeModal();await loadTasks();renderDelegationTab();}catch(e){alert('Failed');}};
+    }
+
+    function setupContactSearch(){
       const cInput=document.getElementById('rContact'),cRes=document.getElementById('cResults'),pInput=document.getElementById('rPhone');
-      cInput.addEventListener('input',function(){const q=this.value.toLowerCase().trim();if(q.length<1){cRes.classList.add('hidden');return;}const f=contacts.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.phone||'').includes(q)).slice(0,10);if(f.length>0){cRes.innerHTML=f.map(c=>`<div class="contact-item" onmousedown="pickContact('${(c.name||'').replace(/'/g,"\\'")}','${c.phone||''}')"<div class="contact-name">${c.name||'Unknown'}</div><div class="contact-phone">${c.phone||''}</div></div>`).join('');cRes.classList.remove('hidden');}else{cRes.innerHTML='<div class="contact-item"><div class="contact-name">No contacts found</div></div>';cRes.classList.remove('hidden');}});
+      cInput.addEventListener('input',function(){const q=this.value.toLowerCase().trim();if(q.length<1){cRes.classList.add('hidden');return;}const f=contacts.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.phone||'').includes(q)).slice(0,10);if(f.length>0){cRes.innerHTML=f.map(c=>`<div class="contact-item" onmousedown="pickContact('${(c.name||'').replace(/'/g,"\\'")}','${c.phone||''}')">${c.name||'Unknown'}<br><small>${c.phone||''}</small></div>`).join('');cRes.classList.remove('hidden');}else{cRes.classList.add('hidden');}});
       cInput.addEventListener('blur',function(){setTimeout(()=>cRes.classList.add('hidden'),300);});
-      document.getElementById('reminderForm').onsubmit=async(e)=>{e.preventDefault();const data={title:document.getElementById('rTitle').value,reminder_type:document.getElementById('rType').value,contact_name:cInput.value,contact_phone:pInput.value,scheduled_time:document.getElementById('rTime').value,notes:document.getElementById('rNotes').value,device_id:deviceId,auto_execute:false};try{await fetch(r?`${API_URL}/reminders/${r.id}`:`${API_URL}/reminders`,{method:r?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});closeModal();loadReminders();}catch(e){alert('Failed');}};
     }
 
     function selType(el,t){document.querySelectorAll('.type-option').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');document.getElementById('rType').value=t;}
@@ -225,3 +345,4 @@
   </script>
 </body>
 </html>
+
