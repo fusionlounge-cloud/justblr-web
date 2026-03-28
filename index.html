@@ -1,3 +1,63 @@
+
+Home
+
+smart-productivity-12
+
+alarm-dash-preview
+
+justblr-matrix-1
+
+
+Credits
+44% off
+
+
+
+User Avatar
+
+
+
+
+
+
+
+
+
+
+code
+Code
+
+preview
+Preview
+
+Icon
+Publish
+Loading...
+**Found the root cause!** The live `justblr-web.onrender.com` has an **OLD version** of the employee modal — it has NO contact picker at all! Just plain Name and Phone fields. My updates went to the Emergent GitHub repo, but your `justblr-web` Render service pulls from a **separate** GitHub repo (`fusionlounge-cloud/justblr-web`).
+You need to update the index.html in your justblr-web GitHub repo. Let me give you the exact file:
+
+$ wc -l /app/web/index.html
+Mar 28, 12:58 PM
+
+Agent asked a question
+Answered
+Up
+Mar 28, 12:59 PM
+
+Rollback
+
+give me the updated version message, i will paste
+
+Mar 28, 01:12 PM
+
+Viewed
+/app/web/index.html
+Mar 28, 01:12 PM
+
+Hey Ananth, Quick input needed :
+Agent will continue working after your reply
+Here's the complete updated index.html file. Copy everything below and replace the entire content of index.html in your fusionlounge-cloud/justblr-web GitHub repo:
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,6 +155,8 @@
     .contact-phone { font-size: 12px; color: #71717a; }
     .time-hint { font-size: 11px; color: #667eea; margin-top: 4px; }
     .hidden { display: none !important; }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; }
+    .checkbox-group input { width: 18px; height: 18px; }
     @media (max-width: 600px) { .type-selector { grid-template-columns: repeat(2, 1fr); } .stats-grid { grid-template-columns: repeat(3, 1fr); } }
   </style>
 </head>
@@ -121,13 +183,74 @@
       document.getElementById('app').innerHTML = `
         <div class="link-screen"><div class="link-card">
           <div class="link-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
-          <h2 class="link-title">Link Your Mobile</h2>
-          <p class="link-subtitle">Enter the 6-digit code from your Justblr Matrix mobile app</p>
+          <h2 class="link-title">Welcome to Justblr Matrix</h2>
+          <p class="link-subtitle">Sign in to access your reminders, or link with mobile app</p>
+          
+          <div id="authView">
+            <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="authEmail" placeholder="your@email.com"></div>
+            <div class="form-group"><label class="form-label">4-Digit PIN</label><input type="password" class="form-input" id="authPin" placeholder="1234" maxlength="4" inputmode="numeric"></div>
+            <div class="form-group hidden" id="authNameGroup"><label class="form-label">Your Name</label><input type="text" class="form-input" id="authName" placeholder="Your name"></div>
+            <button class="link-button" id="authBtn" style="margin-bottom:12px">Sign In</button>
+            <p style="font-size:13px;color:#71717a;cursor:pointer;text-align:center" id="authToggle">Don't have an account? <span style="color:#667eea;font-weight:600">Create one</span></p>
+            <p class="link-error hidden" id="authError"></p>
+          </div>
+
+          <div style="margin:24px 0;display:flex;align-items:center;gap:12px"><div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div><span style="font-size:12px;color:#71717a">OR</span><div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div></div>
+
+          <p style="font-size:13px;color:#a1a1aa;margin-bottom:12px">Link with mobile app code:</p>
           <div class="code-input-group">${[0,1,2,3,4,5].map(i=>`<input type="text" class="code-input" maxlength="1" data-index="${i}" inputmode="numeric">`).join('')}</div>
-          <button class="link-button" id="linkBtn" disabled>Link Device</button>
+          <button class="link-button" id="linkBtn" disabled style="background:rgba(255,255,255,0.1)">Link Device</button>
           <p class="link-error hidden" id="linkError"></p>
-          <div class="link-instructions"><h4>How to get the code:</h4><ol><li>Open Justblr Matrix app on your phone</li><li>Tap "Desktop" icon in the top-right</li><li>Enter the 6-digit code shown here</li></ol></div>
         </div></div>`;
+
+      // Auth form logic
+      let authMode = 'login';
+      const authBtn = document.getElementById('authBtn'), authError = document.getElementById('authError');
+      const authToggle = document.getElementById('authToggle'), authNameGroup = document.getElementById('authNameGroup');
+      
+      authToggle.addEventListener('click', () => {
+        authMode = authMode === 'login' ? 'register' : 'login';
+        authBtn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
+        authToggle.innerHTML = authMode === 'login' 
+          ? "Don't have an account? <span style='color:#667eea;font-weight:600'>Create one</span>"
+          : "Already have an account? <span style='color:#667eea;font-weight:600'>Sign In</span>";
+        authNameGroup.classList.toggle('hidden', authMode === 'login');
+        authError.classList.add('hidden');
+      });
+
+      authBtn.addEventListener('click', async () => {
+        const email = document.getElementById('authEmail').value.trim();
+        const pin = document.getElementById('authPin').value.trim();
+        const name = document.getElementById('authName').value.trim();
+        authError.classList.add('hidden');
+        
+        if (!email) { authError.textContent = 'Please enter your email'; authError.classList.remove('hidden'); return; }
+        if (pin.length !== 4) { authError.textContent = 'Please enter a 4-digit PIN'; authError.classList.remove('hidden'); return; }
+        if (authMode === 'register' && !name) { authError.textContent = 'Please enter your name'; authError.classList.remove('hidden'); return; }
+        
+        authBtn.disabled = true; authBtn.textContent = 'Please wait...';
+        try {
+          const endpoint = authMode === 'register' ? '/auth/register' : '/auth/login';
+          const body = { email: email.toLowerCase(), password: pin };
+          if (authMode === 'register') body.name = name;
+          
+          const res = await fetch(`${API_URL}${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+          const data = await res.json();
+          
+          if (!res.ok) throw new Error(data.detail || 'Something went wrong');
+          
+          deviceId = data.user.device_id;
+          localStorage.setItem('justblr_device_id', deviceId);
+          localStorage.setItem('justblr_auth_token', data.token);
+          localStorage.setItem('justblr_auth_user', JSON.stringify(data.user));
+          render();
+        } catch (err) {
+          authError.textContent = err.message; authError.classList.remove('hidden');
+          authBtn.disabled = false; authBtn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
+        }
+      });
+
+      // Link code logic (existing)
       const inputs = document.querySelectorAll('.code-input'), linkBtn = document.getElementById('linkBtn'), linkError = document.getElementById('linkError');
       inputs.forEach((input,idx)=>{
         input.addEventListener('input',e=>{e.target.value=e.target.value.replace(/[^0-9]/g,'');if(e.target.value&&idx<5)inputs[idx+1].focus();linkBtn.disabled=Array.from(inputs).map(i=>i.value).join('').length!==6;});
@@ -141,12 +264,14 @@
     }
 
     async function showDashboard() {
+      const authUser = JSON.parse(localStorage.getItem('justblr_auth_user') || 'null');
+      const userLabel = authUser ? `Signed in as ${authUser.name || authUser.email}` : 'Linked via code';
       document.getElementById('app').innerHTML = `
         <div class="dashboard">
-          <div class="header"><div><h1>Justblr Matrix</h1><p>Web Dashboard</p></div>
+          <div class="header"><div><h1>Justblr Matrix</h1><p>${userLabel}</p></div>
             <div class="header-actions">
               <button class="btn btn-secondary" id="refreshBtn">Refresh</button>
-              <button class="btn btn-secondary" id="unlinkBtn">Unlink</button>
+              <button class="btn btn-secondary" id="unlinkBtn">${authUser ? 'Sign Out' : 'Unlink'}</button>
             </div>
           </div>
           <div class="tabs">
@@ -156,7 +281,7 @@
           <div id="tabContent"></div>
         </div><div id="modalContainer"></div>`;
       document.getElementById('refreshBtn').onclick=()=>{loadAll();};
-      document.getElementById('unlinkBtn').onclick=()=>{if(confirm('Unlink?')){localStorage.removeItem('justblr_device_id');deviceId=null;render();}};
+      document.getElementById('unlinkBtn').onclick=()=>{if(confirm(authUser ? 'Sign out?' : 'Unlink?')){localStorage.removeItem('justblr_device_id');localStorage.removeItem('justblr_auth_token');localStorage.removeItem('justblr_auth_user');deviceId=null;render();}};
       document.querySelectorAll('.tab').forEach(tab=>{
         tab.onclick=()=>{
           document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -169,7 +294,8 @@
     }
 
     async function loadAll() {
-      await Promise.all([loadContacts(), loadReminders(), loadEmployees(), loadTasks()]);
+      await Promise.all([loadReminders(), loadEmployees(), loadTasks()]);
+      await loadContacts();
       renderTabContent();
     }
 
@@ -178,7 +304,59 @@
       else renderDelegationTab();
     }
 
-    async function loadContacts(){try{const res=await fetch(`${API_URL}/sync/contacts/${deviceId}`);const data=await res.json();contacts=data.contacts||data||[];}catch(e){contacts=[];}}
+    async function loadContacts(){
+      let syncedContacts = [];
+      const contactDeviceId = localStorage.getItem('justblr_contact_device_id');
+      try{
+        // Try current device_id first
+        const res=await fetch(`${API_URL}/sync/contacts/${deviceId}`);
+        const data=await res.json();
+        syncedContacts=data.contacts||[];
+        
+        // If also have a linked contact source, fetch from there too
+        if(contactDeviceId && contactDeviceId !== deviceId){
+          const res2=await fetch(`${API_URL}/sync/contacts/${contactDeviceId}`);
+          const data2=await res2.json();
+          syncedContacts = syncedContacts.concat(data2.contacts||[]);
+        }
+        
+        // If still no contacts, auto-discover from all sources
+        if(syncedContacts.length === 0){
+          const sourcesRes = await fetch(`${API_URL}/sync/contact-sources`);
+          const sources = await sourcesRes.json();
+          if(sources && sources.length > 0){
+            // Use the source with the most contacts
+            const bestSource = sources[0];
+            if(bestSource.device_id !== deviceId){
+              const allRes = await fetch(`${API_URL}/sync/contacts/${bestSource.device_id}`);
+              const allData = await allRes.json();
+              syncedContacts = allData.contacts || [];
+              // Remember this source for future use
+              localStorage.setItem('justblr_contact_device_id', bestSource.device_id);
+            }
+          }
+        }
+      }catch(e){syncedContacts=[];}
+      
+      contacts = syncedContacts;
+      // Also extract contacts from existing reminders (name+phone pairs)
+      const reminderContacts = reminders
+        .filter(r => r.contact_name || r.contact_phone)
+        .map(r => ({ name: r.contact_name || '', phone: r.contact_phone || '' }));
+      // Also extract from employees
+      const empContacts = employees
+        .filter(e => e.name || e.phone)
+        .map(e => ({ name: e.name || '', phone: e.phone || '' }));
+      // Merge all, deduplicate by name+phone
+      const allContacts = [...contacts, ...reminderContacts, ...empContacts];
+      const seen = new Set();
+      contacts = allContacts.filter(c => {
+        const key = (c.name||'').toLowerCase() + '|' + (c.phone||'');
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
     async function loadReminders(){try{const res=await fetch(`${API_URL}/reminders?device_id=${deviceId}`);reminders=await res.json();}catch(e){reminders=[];}}
     async function loadEmployees(){try{const res=await fetch(`${API_URL}/employees?device_id=${deviceId}`);employees=await res.json();}catch(e){employees=[];}}
     async function loadTasks(){try{const res=await fetch(`${API_URL}/tasks?device_id=${deviceId}`);tasks=await res.json();}catch(e){tasks=[];}}
@@ -216,7 +394,14 @@
       const activeEmployees=employees.filter(e=>e.is_active!==false);
       const pendingTasks=tasks.filter(t=>!t.is_completed);
       const completedTasks=tasks.filter(t=>t.is_completed);
+      const contactSource = localStorage.getItem('justblr_contact_device_id');
       document.getElementById('tabContent').innerHTML=`
+        ${contacts.length>0?`<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+          <span style="color:#22c55e;font-size:13px">Contacts loaded: <strong>${contacts.length.toLocaleString()}</strong></span>
+          ${contactSource?`<span style="color:#71717a;font-size:11px">Source: Mobile Device</span>`:''}
+        </div>`:`<div style="background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.2);border-radius:12px;padding:12px 16px;margin-bottom:16px">
+          <span style="color:#eab308;font-size:13px">No contacts found. Sync contacts from your mobile app first, or use the sync code to link your mobile device.</span>
+        </div>`}
         <div class="section-card">
           <div class="section-header"><h2 class="section-title">Employees (${activeEmployees.length})</h2><button class="btn btn-primary" onclick="openEmployeeModal()">+ Add Employee</button></div>
           <div class="employee-list">
@@ -301,11 +486,23 @@
         <div class="modal-overlay" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()">
           <div class="modal-header"><h2 class="modal-title">${e?'Edit':'Add'} Employee</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
           <form id="employeeForm">
-            <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="eName" value="${e?.name||''}" required></div>
+            <div class="form-group contact-picker"><label class="form-label">Name</label><input class="form-input" id="eName" value="${e?.name||''}" required autocomplete="off"><div class="contact-results hidden" id="empContactResults"></div></div>
             <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="ePhone" value="${e?.phone||''}"></div>
             <div style="display:flex;gap:12px;margin-top:24px"><button type="submit" class="btn btn-primary" style="flex:1">${e?'Update':'Add'}</button><button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>
           </form>
         </div></div>`;
+      // Contact search for employee name field
+      const nameInput=document.getElementById('eName'),empRes=document.getElementById('empContactResults'),phoneInput=document.getElementById('ePhone');
+      nameInput.addEventListener('input',function(){
+        const q=this.value.toLowerCase().trim();
+        if(q.length<1){empRes.classList.add('hidden');return;}
+        const f=contacts.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.phone||'').includes(q)).slice(0,10);
+        if(f.length>0){
+          empRes.innerHTML=f.map(c=>`<div class="contact-item" onmousedown="document.getElementById('eName').value='${(c.name||'').replace(/'/g,"\\'")}';document.getElementById('ePhone').value='${c.phone||''}';document.getElementById('empContactResults').classList.add('hidden')"><div class="contact-name">${c.name||'Unknown'}</div><div class="contact-phone">${c.phone||''}</div></div>`).join('');
+          empRes.classList.remove('hidden');
+        }else{empRes.classList.add('hidden');}
+      });
+      nameInput.addEventListener('blur',function(){setTimeout(()=>empRes.classList.add('hidden'),300);});
       document.getElementById('employeeForm').onsubmit=async(ev)=>{ev.preventDefault();const data={name:document.getElementById('eName').value,phone:document.getElementById('ePhone').value,device_id:deviceId,is_active:true};try{await fetch(e?`${API_URL}/employees/${e.id}`:`${API_URL}/employees`,{method:e?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});closeModal();await loadEmployees();renderDelegationTab();}catch(e){alert('Failed');}};
     }
 
@@ -345,4 +542,3 @@
   </script>
 </body>
 </html>
-
